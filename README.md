@@ -4,10 +4,11 @@ This is guide for how to compile fread from scratch using a vagrant machine. Thi
 
 # Overview
 
-What you need to compile:
+What you need to cross-compile:
 
 * The fread initrd
 * The fread kernel
+* The kexec tool
 * The fread userland
 
 The initrd (initial ramdisk) is a very minimal linux userland that has just enough functionality to mount what needs mounting, chroot and boot into the real userland which is a complete, but minimal, debian-based system.
@@ -23,23 +24,23 @@ Getting a serial console requires opening the Kindle and a bit of soldering. Do 
 
 Currently the only tested method for booting into fread is to let the Kindle boot into the normal Kindle operating system and then issue commands via serial console.
 
-It is certainly possible to boot fread without serial console but this has not yet been implemented.
+It is certainly possible to boot fread without serial console but it would require modification to the kindle's original operating system and has not yet been implemented.
 
 # Compiling the kernel
 
-For some reason many of the cross compilers I've tried create a kernel that simply won't boot on my Kindle 4 NT. No error messages so hard to debug. If anyone has any idea why this could be, please let me know!
+For some reason many of the cross compilers I've tried create a kernel that simply won't boot on my Kindle 4 NT. No error messages appear so it's hard to debug. If anyone has any idea why this could be please let me know!
 
 The cross-compilation toolchain built into Ubuntu 12.04 generates a bootable kernel so for now that's what we're using. For other parts of the system you can use whichever cross compiler you prefer.
 
 ## Cross-compile environment using vagrant
 
-The version of vagrant in Ubuntu 14.04 is a bit old and won't actually work for our purposes. If you have a newer Ubuntu then you may be able to just do:
+The version of vagrant in Ubuntu 14.04 is a bit old and won't actually work for our purposes. If you have a newer Ubuntu system then you may be able to just do:
 
 ```
 sudo apt-get install vagrant
 ```
 
-If it doesn't work then install the newest version:
+If you get errors when running `vagrant up` then install the newest version instead:
 
 ```
 sudo bash -c 'echo deb http://vagrant-deb.linestarve.com/ any main > /etc/apt/sources.list.d/wolfgang42-vagrant.list'
@@ -74,8 +75,7 @@ vagrant ssh
 
 ## but I don't like vagrant!
 
-Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-kernel-vagrant) and set up your own Ubuntu 12.04 system with the right depdencies installed :)
-
+Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-vagrant) and set up your own Ubuntu 12.04 system with the right depdencies installed :)
 
 ## Compiling initrd
 
@@ -129,17 +129,67 @@ This requires a special cross-compile environment.
 
 To set it up first get the required packages:
 
+
 ```
 git clone https://github.com/fread-ink/fread-kexec-k4
 cd fread-kexec-k4/
 ./fetch.sh
 ```
 
+Now build the kindle 4 cross compilation toolchain:
+
+```
+./build_toolchain.sh
+```
+
+and finally build kexec using the toolchain:
+
+```
+./build_kexec.sh
+```
+
+The build_kexec.sh script automatically copies the resulting binary to:
+
+```
+/vagrant/out/kexec_k4
+```
+
+Which is then accessible in out/kexec_k4 in the directory from which you launched the vagrant vm.
+
+ToDo
+
 # Building the userland
 
 The userland is based on Debian. While source code is available for all packages via the debian repository it is outside the scope of this document to explain how to compile a minimal debian-based distribution from scratch. The original fread distro was created using debootstrap and then removing unnecessary packages and files.
 
 See the (fread-userland)[https://github.com/fread-ink/fread-userland] readme file for info on how to compile the few packages that are not included in debian. This should also give you enough info to compile the entire fread userland from scratch by compiling every single debian source package from scratch for arm. You should then be able to assemble the built packages into a working fread distro by using e.g. multistrap. Maybe some day we'll have an automated build system for the userland.
+
+# Putting it all together
+
+You should now have three files:
+
+* `fread_kernel_k4.uImage`: The kernel with the initrd included
+* `kexec_k4`:
+* `fread.ext4`: The fread userland filesystem
+
+
+Put them on your kindle by connecting it to your computer via USB and copying them to the resulting USB storage device. 
+
+Put them all in a directory called `fread`. THIS IS IMPORTANT! It is also important that the userland filesystem file is called fread.ext4
+
+Now unmount/eject the USB storage device from your computer (don't skip this step).
+
+Using the serial console on the kindle do:
+
+```
+cd /mnt/us/fread/
+./kexec_k4 --type=uImage -l ./fread_kernel_k4.uImage # load the kernel
+./kexec_k4 -e # boot the kernel
+```
+
+fread should now boot up!
+
+If the /mnt/us directory is empty then cd out of it, unmount/eject your kindle from the computer to which it's attached and cd back into it.
 
 # Thanks to
 
@@ -161,7 +211,7 @@ or you can download the entire operating system in a ready-to-use package:
 
 # Copyright and license
 
-Unless otherwise stated everything in this repository Copyright 2016 Marc Juul and licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+Unless otherwise stated everything in this repository Copyright 2016 Marc Juul and licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 # Disclaimer
 
@@ -172,4 +222,3 @@ Kobo is a registered trademark of Kobo Inc. Nook is a registered trademark of Ba
 E Ink is a registered trademark of the E Ink Corporation. 
 
 None of these organizations are in any way affiliated with fread nor this git project and neither fread nor this git project is in any way endorsed by these corporations.
-
