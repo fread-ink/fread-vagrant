@@ -1,6 +1,22 @@
-THIS IS A WORK IN PROGRESS. NOTHING WORKS YET!
+WARNING: THIS IS A WORK IN PROGRESS. NOTHING WORKS YET!
 
 This is guide for how to compile fread from scratch using a vagrant machine. This may be of use to developers but if you're looking to get started using fread you should look at the precompiled images (ToDo) instead. All of the components described here are also available individually as pre-compiled packages. See the "Pre-compiled" section near the bottom of this document.
+
+# Table of contents
+
+  * [Overview](#overview)
+  * [Compiling the kernel](#compiling-the-kernel)
+    * [Cross-compile environment using vagrant](#cross-compile-environment-using-vagrant)
+    * [but I don't like vagrant!](#but-i-dont-like-vagrant)
+    * [Compiling initrd](#compiling-initrd)
+  * [Compiling the kernel](#compiling-the-kernel-1)
+  * [Compiling kexec](#compiling-kexec)
+  * [Building the userland](#building-the-userland)
+  * [Putting it all together](#putting-it-all-together)
+  * [Thanks to](#thanks-to)
+  * [Pre-compiled](#pre-compiled)
+  * [Copyright and license](#copyright-and-license)
+  * [Disclaimer](#disclaimer)
 
 # Overview
 
@@ -217,8 +233,10 @@ Unless otherwise stated everything in this repository Copyright 2016 Marc Juul a
 
 Kindle and Lab126 are registered trademarks of Amazon Inc. 
 
-Kobo is a registered trademark of Kobo Inc. Nook is a registered trademark of Barnes & Noble Booksellers Inc. 
+Kobo is a registered trademark of Kobo Inc. 
+
+Nook is a registered trademark of Barnes & Noble Booksellers Inc. 
 
 E Ink is a registered trademark of the E Ink Corporation. 
 
-None of these organizations are in any way affiliated with fread nor this git project and neither fread nor this git project is in any way endorsed by these corporations.
+None of these organizations are in any way affiliated with fread nor this git project nor any of the authors of this project and neither fread nor this git project is in any way endorsed by these corporations.
