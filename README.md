@@ -1,6 +1,6 @@
 THIS IS A WORK IN PROGRESS. NOTHING WORKS YET!
 
-This is guide for how to compile fread from scratch using a vagrant machine. This may be of use to developers but if you're looking to get started using fread you should look at the precompiled images (ToDo) instead.
+This is guide for how to compile fread from scratch using a vagrant machine. This may be of use to developers but if you're looking to get started using fread you should look at the precompiled images (ToDo) instead. All of the components described here are also available individually as pre-compiled packages. See the "Pre-compiled" section near the bottom of this document.
 
 # Overview
 
@@ -86,6 +86,7 @@ We'll use buildroot to compile a minimal buildroot that uses uclibc and busybox.
 First you need a buildroot that's been configured to build an iMX 5 initrd:
 
 ```
+cd ~/
 git clone https://github.com/fread-ink/fread-initrd
 cd fread-initrd/
 ./fetch.sh 
@@ -98,6 +99,70 @@ cd buildroot-2016.02/
 make
 ```
 
+# Compiling the kernel
+
+First download the kernel:
+
+```
+cd ~/
+git clone https://github.com/fread-ink/fread-kernel-k4
+cd fread-kernel-k4/
+```
+
+Now compile it:
+
+```
+./build.sh
+```
+
+This will take a while but not nearly as long as the buildroot compile.
+
+# Compiling kexec
+
+kexec is the tool used to load a new linux kernel without rebooting. This is currently the method used for booting into fread from the original kindle operating system. This has the advantage of not having to modify anything related to the original operating system so you don't brick your device during development.
+
+Unfortunately kexec has to be compiled with the same glibc version, kernel headers and compile-time parameters used in the original Kindle operating system since it will be executed before fread has loaded.
+
+Fortunately [NiLuJe](https://github.com/NiLuJe) has documented how to do this. See their latest "Cross-compilation ToolChain & patches" in [this thread](http://www.mobileread.com/forums/showthread.php?t=225030).
+
+This requires a special cross-compile environment.
+
+To set it up first get the required packages:
+
+```
+git clone https://github.com/fread-ink/fread-kexec-k4
+cd fread-kexec-k4/
+./fetch.sh
+```
+
+# Building the userland
+
+The userland is based on Debian. While source code is available for all packages via the debian repository it is outside the scope of this document to explain how to compile a minimal debian-based distribution from scratch. The original fread distro was created using debootstrap and then removing unnecessary packages and files.
+
+See the (fread-userland)[https://github.com/fread-ink/fread-userland] readme file for info on how to compile the few packages that are not included in debian. This should also give you enough info to compile the entire fread userland from scratch by compiling every single debian source package from scratch for arm. You should then be able to assemble the built packages into a working fread distro by using e.g. multistrap. Maybe some day we'll have an automated build system for the userland.
+
+# Thanks to
+
+* [NiLuJe](https://github.com/NiLuJe) for KindleTool and for his amazing work on Kindle cross-compilation!
+* The mobileread e-reader hacking community!
+
+# Pre-compiled
+
+The code described in this document is available as pre-compiled packages here:
+
+* initrd (ToDo)
+* kernel (ToDo)
+* kexec (ToDo)
+* userland (ToDo)
+
+or you can download the entire operating system in a ready-to-use package:
+
+* fread (ToDo)
+
+# Copyright and license
+
+Unless otherwise stated everything in this repository Copyright 2016 Marc Juul and licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
 # Disclaimer
 
 Kindle and Lab126 are registered trademarks of Amazon Inc. 
@@ -107,5 +172,4 @@ Kobo is a registered trademark of Kobo Inc. Nook is a registered trademark of Ba
 E Ink is a registered trademark of the E Ink Corporation. 
 
 None of these organizations are in any way affiliated with fread nor this git project and neither fread nor this git project is in any way endorsed by these corporations.
-
 
