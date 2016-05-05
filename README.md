@@ -4,12 +4,12 @@ This is guide for how to compile fread from scratch using a vagrant machine. Thi
 
 # Table of contents
 
+  * [Table of contents](#table-of-contents)
   * [Overview](#overview)
-  * [Compiling the kernel](#compiling-the-kernel)
-    * [Cross-compile environment using vagrant](#cross-compile-environment-using-vagrant)
+  * [Cross-compile environment using vagrant](#cross-compile-environment-using-vagrant)
     * [but I don't like vagrant!](#but-i-dont-like-vagrant)
-    * [Compiling initrd](#compiling-initrd)
-  * [Compiling the kernel](#compiling-the-kernel-1)
+  * [Compiling initrd](#compiling-initrd)
+  * [Compiling the kernel](#compiling-the-kernel)
   * [Compiling kexec](#compiling-kexec)
   * [Building the userland](#building-the-userland)
   * [Putting it all together](#putting-it-all-together)
@@ -42,13 +42,13 @@ Currently the only tested method for booting into fread is to let the Kindle boo
 
 It is certainly possible to boot fread without serial console but it would require modification to the kindle's original operating system and has not yet been implemented.
 
-# Compiling the kernel
+# Cross-compile environment using vagrant
 
-For some reason many of the cross compilers I've tried create a kernel that simply won't boot on my Kindle 4 NT. No error messages appear so it's hard to debug. If anyone has any idea why this could be please let me know!
+We're using a vagrant vm to compile everything. It greatly simplifies things when all developers are building on the same system.
+
+For some reason many of the cross compilers I've tried create a kernel that simply won't boot on my Kindle 4 NT. No error messages appear after running `kexec -e`, just... nothing. If anyone has any idea why this could be please let me know!
 
 The cross-compilation toolchain built into Ubuntu 12.04 generates a bootable kernel so for now that's what we're using. For other parts of the system you can use whichever cross compiler you prefer.
-
-## Cross-compile environment using vagrant
 
 The version of vagrant in Ubuntu 14.04 is a bit old and won't actually work for our purposes. If you have a newer Ubuntu system then you may be able to just do:
 
@@ -93,7 +93,7 @@ vagrant ssh
 
 Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-vagrant) and set up your own Ubuntu 12.04 system with the right depdencies installed :)
 
-## Compiling initrd
+# Compiling initrd
 
 The first thing to do is compile the initrd (initial ramdisk) since we'll be compiling a kernel with a built-in initrd.
 
