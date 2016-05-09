@@ -108,12 +108,13 @@ cd fread-initrd/
 ./fetch.sh 
 ```
 
-Now compile the initrd. This will cause buildroot to download several packages and will take several hours:
+Compile the initrd. This will cause buildroot to download several packages and will probably take several hours:
 
 ```
-cd buildroot-2016.02/
-make
+./build.sh
 ```
+
+The generated initrd will be in `out/`.
 
 # Compiling the kernel
 
