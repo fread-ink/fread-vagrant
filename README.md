@@ -142,24 +142,17 @@ Unfortunately kexec has to be compiled with the same glibc version, kernel heade
 
 Fortunately [NiLuJe](https://github.com/NiLuJe) has documented how to do this. See their latest "Cross-compilation ToolChain & patches" in [this thread](http://www.mobileread.com/forums/showthread.php?t=225030).
 
-This requires a special cross-compile environment.
+This requires a special cross-compile toolchain.
 
-To set it up first get the required packages:
-
-
-```
-git clone https://github.com/fread-ink/fread-kexec-k4
-cd fread-kexec-k4/
-./fetch.sh
-```
-
-Now build the kindle 4 cross compilation toolchain:
+To compile this toolchain:
 
 ```
-./build_toolchain.sh
+git clone https://github.com/fread-ink/fread-native-cross-compile
+cd fread-native-cross-compile/
+./build_k4.sh
 ```
 
-and finally build kexec using the toolchain:
+then build kexec using the toolchain:
 
 ```
 ./build_kexec.sh
