@@ -140,11 +140,9 @@ kexec is the tool used to load a new linux kernel without rebooting. This is cur
 
 Unfortunately kexec has to be compiled with the same glibc version, kernel headers and compile-time parameters used in the original Kindle operating system since it will be executed before fread has loaded.
 
-Fortunately [NiLuJe](https://github.com/NiLuJe) has documented how to do this. See their latest "Cross-compilation ToolChain & patches" in [this thread](http://www.mobileread.com/forums/showthread.php?t=225030).
+Compiling kexec requires a different cross-compile toolchain.
 
-This requires a special cross-compile toolchain.
-
-To compile this toolchain:
+To build this toolchain:
 
 ```
 git clone https://github.com/fread-ink/fread-native-cross-compile
@@ -152,21 +150,14 @@ cd fread-native-cross-compile/
 ./build_k4.sh
 ```
 
-then build kexec using the toolchain:
+again this will take a long time.
+
+Then build kexec using the toolchain:
 
 ```
+source env_k4.sh
 ./build_kexec.sh
 ```
-
-The build_kexec.sh script automatically copies the resulting binary to:
-
-```
-/vagrant/out/kexec_k4
-```
-
-Which is then accessible in out/kexec_k4 in the directory from which you launched the vagrant vm.
-
-ToDo
 
 # Building the userland
 
