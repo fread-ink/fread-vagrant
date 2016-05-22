@@ -161,9 +161,7 @@ source env_k4.sh
 
 # Building the userland
 
-The userland is based on Debian. While source code is available for all packages via the debian repository it is outside the scope of this document to explain how to compile a minimal debian-based distribution from scratch. The original fread distro was created using debootstrap and then removing unnecessary packages and files.
-
-See the (fread-userland)[https://github.com/fread-ink/fread-userland] readme file for info on how to compile the few packages that are not included in debian. This should also give you enough info to compile the entire fread userland from scratch by compiling every single debian source package from scratch for arm. You should then be able to assemble the built packages into a working fread distro by using e.g. multistrap. Maybe some day we'll have an automated build system for the userland.
+See the (fread-userland)[https://github.com/fread-ink/fread-userland] readme file for info on how to build a working userland. 
 
 # Putting it all together
 
