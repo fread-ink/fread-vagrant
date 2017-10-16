@@ -73,6 +73,12 @@ cd fread-vagrant/
 vagrant up
 ```
 
+__Note for Fedora users.__ The virtual machine requires the _virtualbox_ provider. Vagrant on Fedora comes with a different default provider _libvirt_, which will fail running the virtual machine. You need to append `--provider=virtualbox` to have a successful start:
+
+```
+vagrant up --provider=virtualbox
+```
+
 To get a shell on the virtual machine just ensure that you're in the fread-vagrant dir and run:
 
 ```
