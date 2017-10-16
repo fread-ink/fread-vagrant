@@ -114,7 +114,7 @@ Compile the initrd. This will cause buildroot to download several packages and w
 ./build.sh
 ```
 
-The generated initrd will be in `out/`.
+The generated initrd will be at `~/fread-initrd/initrd.cpio`.
 
 # Compiling the kernel
 
@@ -123,10 +123,17 @@ First download the kernel:
 ```
 cd ~/
 git clone https://github.com/fread-ink/fread-kernel-k4
-cd fread-kernel-k4/
+cd fread-kernel-k4/linux-2.6.31
 ```
 
-Now compile it:
+Copy the config file and configure it with the initrd that you have just built.
+
+```
+cp ../config .config
+sed -i '/^CONFIG_INITRAMFS_SOURCE=/s@=.*$@='"\"~/fread-initrd/initrd.cpio\""@g .config
+```
+
+Now compile the kernel:
 
 ```
 ./build.sh
