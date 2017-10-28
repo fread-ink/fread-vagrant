@@ -161,7 +161,7 @@ source env_k4.sh
 
 # Building the userland
 
-See the (fread-userland)[https://github.com/fread-ink/fread-userland] readme file for info on how to build a working userland. 
+See the [fread-userland](https://github.com/fread-ink/fread-userland) readme file for info on how to build a working userland. 
 
 # Putting it all together
 
