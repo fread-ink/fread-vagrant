@@ -73,6 +73,12 @@ cd fread-vagrant/
 vagrant up
 ```
 
+__Note for Fedora users.__ The virtual machine requires the _virtualbox_ provider. Vagrant on Fedora comes with a different default provider _libvirt_, which will fail running the virtual machine. You need to append `--provider=virtualbox` to have a successful start:
+
+```
+vagrant up --provider=virtualbox
+```
+
 To get a shell on the virtual machine just ensure that you're in the fread-vagrant dir and run:
 
 ```
@@ -114,7 +120,7 @@ Compile the initrd. This will cause buildroot to download several packages and w
 ./build.sh
 ```
 
-The generated initrd will be in `out/`.
+The generated initrd will be at `~/fread-initrd/initrd.cpio`.
 
 # Compiling the kernel
 
@@ -123,10 +129,17 @@ First download the kernel:
 ```
 cd ~/
 git clone https://github.com/fread-ink/fread-kernel-k4
-cd fread-kernel-k4/
+cd fread-kernel-k4/linux-2.6.31
 ```
 
-Now compile it:
+Copy the config file and configure it with the initrd that you have just built.
+
+```
+cp ../config .config
+sed -i '/^CONFIG_INITRAMFS_SOURCE=/s@=.*$@='"\"~/fread-initrd/initrd.cpio\""@g .config
+```
+
+Now compile the kernel:
 
 ```
 ./build.sh
