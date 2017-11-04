@@ -219,7 +219,7 @@ If the /mnt/us directory is empty then cd out of it, unmount/eject your kindle f
 The code described in this document is available as pre-compiled packages here:
 
 * [initrd](https://github.com/fread-ink/fread-initrd/tree/master/bin)
-* kernel (ToDo)
+* [kernel](https://github.com/fread-ink/fread-kernel-k4/tree/master/bin)
 * kexec (ToDo)
 * userland (ToDo)
 
