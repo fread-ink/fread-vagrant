@@ -1,4 +1,4 @@
-WARNING: THIS IS A WORK IN PROGRESS. NOTHING WORKS YET!
+Remember that fread is a work in progress. Some documentation is still missing for how to compile Xorg drivers and how to bundle the userland into an ext4 file.
 
 This is guide for how to compile fread from scratch using a vagrant machine. This may be of use to developers but if you're looking to get started using fread you should look at the precompiled images (ToDo) instead. All of the components described here are also available individually as pre-compiled packages. See the "Pre-compiled" section near the bottom of this document.
 
