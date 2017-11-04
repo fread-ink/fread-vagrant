@@ -157,7 +157,7 @@ kexec is the tool used to load a new linux kernel without rebooting. This is cur
 
 Unfortunately kexec has to be compiled with the same glibc version, kernel headers and compile-time parameters used in the original Kindle operating system since it will be executed before fread has loaded.
 
-Compiling kexec requires a different cross-compile toolchain. You probably don't have to build this toolchain from within the fread-vagrant virtual machine but you can if you prefer.
+Compiling kexec requires a different cross-compile toolchain.
 
 To build this toolchain:
 
@@ -167,7 +167,7 @@ cd fread-native-cross-compile/
 ./build_k4.sh
 ```
 
-again this will take a long time.
+again this will take a long time. If you encounter odd build errors that just say something "killed" with no reason given then your VM is running out of memory. Use `vagrant halt` to shut down the VM, then edit the line `vb.customize ["modifyvm", :id, "--memory", "1024"]` to e.g. 2048 instead of 1024, restart the VM with `vagrant up` and try again.
 
 Then build kexec using the toolchain:
 
