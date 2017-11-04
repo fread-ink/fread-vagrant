@@ -79,6 +79,10 @@ __Note for Fedora users.__ The virtual machine requires the _virtualbox_ provide
 vagrant up --provider=virtualbox
 ```
 
+If this fails because the virtualbox hashicorp/pecise32 image is no longer available from hashicorp's website then you can find a backup of it [here](https://github.com/fread-ink/fread-vm-backup/releases/tag/v0.0.1).
+
+If the package repository for Ubuntu 12.04 is unavailable then you can find a backup of the required packages [here](https://github.com/fread-ink/fread-vm-backup/tree/master/fread-vagrant).
+
 To get a shell on the virtual machine just ensure that you're in the fread-vagrant dir and run:
 
 ```
@@ -153,7 +157,7 @@ kexec is the tool used to load a new linux kernel without rebooting. This is cur
 
 Unfortunately kexec has to be compiled with the same glibc version, kernel headers and compile-time parameters used in the original Kindle operating system since it will be executed before fread has loaded.
 
-Compiling kexec requires a different cross-compile toolchain.
+Compiling kexec requires a different cross-compile toolchain. You probably don't have to build this toolchain from within the fread-vagrant virtual machine but you can if you prefer.
 
 To build this toolchain:
 
@@ -171,6 +175,8 @@ Then build kexec using the toolchain:
 source env_k4.sh
 ./build_kexec.sh
 ```
+
+Log out and then log back in before continuing.
 
 # Building the userland
 
@@ -212,7 +218,7 @@ If the /mnt/us directory is empty then cd out of it, unmount/eject your kindle f
 
 The code described in this document is available as pre-compiled packages here:
 
-* initrd (ToDo)
+* [initrd](https://github.com/fread-ink/fread-initrd/tree/master/bin)
 * kernel (ToDo)
 * kexec (ToDo)
 * userland (ToDo)
