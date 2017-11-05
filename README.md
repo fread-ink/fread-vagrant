@@ -187,9 +187,8 @@ See the [fread-userland](https://github.com/fread-ink/fread-userland) readme fil
 You should now have three files:
 
 * `fread_kernel_k4.uImage`: The kernel with the initrd included
-* `kexec_k4`:
+* `kexec_k4`: Command line utility for switching kernels without reboot
 * `fread.ext4`: The fread userland filesystem
-
 
 Put them on your kindle by connecting it to your computer via USB and copying them to the resulting USB storage device. 
 
@@ -220,7 +219,7 @@ The code described in this document is available as pre-compiled packages here:
 
 * [initrd](https://github.com/fread-ink/fread-initrd/tree/master/bin)
 * [kernel](https://github.com/fread-ink/fread-kernel-k4/tree/master/bin)
-* kexec (ToDo)
+* [kexec](https://github.com/fread-ink/fread-native-cross-compile/tree/master/bin)
 * userland (ToDo)
 
 or you can download the entire operating system in a ready-to-use package:
