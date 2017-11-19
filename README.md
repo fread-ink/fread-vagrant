@@ -103,13 +103,13 @@ vagrant ssh
 
 Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-vagrant) and set up your own Ubuntu 12.04 system with the right depdencies installed :)
 
-# Compiling initrd
+# Compiling the initramfs
 
-The first thing to do is compile the initrd (initial ramdisk) since we'll be compiling a kernel with a built-in initrd.
+The first thing to do is compile the initramfs (initial ram filesystem) since we'll be compiling a kernel with a built-in initramfs.
 
 We'll use buildroot to compile a minimal buildroot that uses uclibc and busybox. 
 
-First you need a buildroot that's been configured to build an iMX 5 initrd:
+First you need a buildroot that's been configured to build an iMX 5 initramfs:
 
 ```
 cd ~/
@@ -118,10 +118,16 @@ cd fread-initrd/
 ./fetch.sh 
 ```
 
-Compile the initrd. This will cause buildroot to download several packages and will probably take several hours:
+Compile the initramfs. This will cause buildroot to download several packages and will probably take several hours:
 
 ```
 ./build.sh
+```
+
+Now create the initramfs file:
+
+```
+sudo ./bundle_initramfs.sh
 ```
 
 The generated initrd will be at `~/fread-initrd/initrd.cpio`.
