@@ -12,7 +12,7 @@ This is guide for how to compile fread from scratch using a vagrant machine. Thi
   * [Compiling the kernel](#compiling-the-kernel)
   * [Compiling kexec](#compiling-kexec)
   * [Building the userland](#building-the-userland)
-  * [Putting it all together](#putting-it-all-together)
+  * [Booting into fread](#booting-into-fread)
   * [Thanks to](#thanks-to)
   * [Pre-compiled](#pre-compiled)
   * [Copyright and license](#copyright-and-license)
@@ -89,7 +89,9 @@ To get a shell on the virtual machine just ensure that you're in the fread-vagra
 vagrant ssh
 ```
 
-and make sure you're NOT working in the vagrant dir (/vagrant) since that directory does not support hard links.
+The `/vagrant` dir is shared between the VM and your actual system such that any changes to `/vagrant/` happens in the `fread-vagrant/` dir.
+
+For the rest of this guide make sure you're NEVER actually compiling anything directly in the `/vagrant` dir since that directory does not support hard links.
 
 If you need to get back into the machine after rebooting just:
 
@@ -99,9 +101,15 @@ vagrant up
 vagrant ssh
 ```
 
+If you need to stop the VM use:
+
+```
+vagrant halt
+```
+
 ## but I don't like vagrant!
 
-Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-vagrant) and set up your own Ubuntu 12.04 system with the right depdencies installed :)
+Alright just look at the bootstrap.sh file in the [fread vagrant repo](https://github.com/fread-ink/fread-vagrant) and set up your own Ubuntu 12.04 system with the right dependencies installed :)
 
 # Compiling the initramfs
 
@@ -155,7 +163,7 @@ Now compile the kernel:
 ./build.sh
 ```
 
-This will take a while but not nearly as long as the buildroot compile.
+This will take a while but not nearly as long as the buildroot compile. You will need to copy the compiled kernel and modules out from the virtual machine. Copy the entire `OUTPUT/` directory to `/vagrant/KERNEL`. The files will then be available in `fread-vagrant/KERNEL` after logging out from the virtual machine.
 
 # Compiling kexec
 
@@ -188,31 +196,64 @@ Log out and then log back in before continuing.
 
 See the [fread-userland](https://github.com/fread-ink/fread-userland) readme file for info on how to build a working userland. 
 
-# Putting it all together
+# Booting into fread
 
-You should now have three files:
+## Getting to initramfs
 
-* `fread_kernel_k4.uImage`: The kernel with the initrd included
-* `kexec_k4`: Command line utility for switching kernels without reboot
-* `fread.ext4`: The fread userland filesystem
+Put the following files in a directory called `fread/`:
 
-Put them on your kindle by connecting it to your computer via USB and copying them to the resulting USB storage device. 
+* uImage: The fread kernel (including initramfs)
+* kexec: The command line utility used to switch the running kernel
+* fread.ext4: The fread userland
 
-Put them all in a directory called `fread`. THIS IS IMPORTANT! It is also important that the userland filesystem file is called fread.ext4
+Connect your e-reader using USB, mount it as a storage device and copy the `fread/` directory to the root of the e-reader's filesystem.
 
-Now unmount/eject the USB storage device from your computer (don't skip this step).
+NOTE: THE NAMING AND LOCATIONS OF THE FILES AND DIRECTORY IS IMPORTANT!
 
-Using the serial console on the kindle do:
+Now using a serial console, log in as root on the e-reader. Ensure that the e-reader has been unmounted/ejected from your computer (if it is plugged into usb) and then boot into fread:
 
 ```
 cd /mnt/us/fread/
-./kexec_k4 --type=uImage -l ./fread_kernel_k4.uImage # load the kernel
-./kexec_k4 -e # boot the kernel
+./kexec --type=uImage -l ./uImage # load the kernel
+./kexec -e # boot the kernel
 ```
 
-fread should now boot up!
+fread should now boot into the initramfs!
 
-If the /mnt/us directory is empty then cd out of it, unmount/eject your kindle from the computer to which it's attached and cd back into it.
+If the `/mnt/us` directory is empty then cd out of it, unmount/eject your kindle from the computer to which it's attached and cd back into `/mnt/us`.
+
+## Getting to userland
+
+The initramfs init script currently just gives you a root shell. Here is an in-progress script to get you into userland:
+
+```
+# TODO if any of the following commands fail then echo an error
+# wait 5 seconds for user to hit any enter, drop them into a shell if they do
+# or reboot into rescue system if not (can we blink out a code on the LED?)
+
+# dark incantations to allow weird recursive mounting strategy
+/bin/mount --make-private / # move mount won't work for shared or slave mounts
+
+# Mount the kindle's fat32 partition so we can access the fread.ext4 file
+/sbin/losetup -o 8192 /dev/loop/0 /dev/mmcblk0p4 # for some reason we need a 8192 byte offset
+/bin/mkdir -p /mnt/us # ensure mountpoint exists
+/bin/mount -t vfat -o defaults,noatime,utf8,noexec,shortname=mixed /dev/loop/0 /mnt/us
+
+# Mount the fread userland
+/sbin/losetup /dev/loop/1 /mnt/us/fread/fread.ext4
+/bin/mkdir -p /mnt/fread # ensure mountpoint exists
+/bin/mount -t ext4 -o defaults,noatime /dev/loop/1 /mnt/fread
+/bin/mkdir -p /mnt/fread/mnt/us # ensure nested fat32 mountpoint exists
+
+/bin/mount --move /mnt/us /mnt/fread/mnt/us # move mount point
+
+# TODO We should have a proper userland init script
+switch_root /mnt/fread /sbin/init # switch to fread userland
+# If you have issues with switch_root you can try:
+# chroot /mnt/fread
+```
+
+After landing in the fread userland you should manually mount `/proc` and `/sys`.
 
 # Thanks to
 
