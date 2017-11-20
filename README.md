@@ -253,7 +253,28 @@ switch_root /mnt/fread /sbin/init # switch to fread userland
 # chroot /mnt/fread
 ```
 
-After landing in the fread userland you should manually mount `/proc` and `/sys`.
+After landing in the fread userland you should manually mount `/proc` and `/sys`:
+
+```
+mount -t proc proc  /proc
+mount -t sysfs sysfs /sys
+```
+
+Loading the eink kernel modules:
+
+```
+modprobe eink_fb_waveform
+modprobe eink_fb_hal
+modprobe mxc_epdc_fb dont_register_fb=1
+modprobe eink_fb_hal_fslepdc bootstrap=0
+modprobe eink_fb_shim
+```
+
+Manually triggering a display update:
+
+```
+echo "1" > /proc/eink_fb/update_display
+```
 
 # Thanks to
 
