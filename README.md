@@ -247,18 +247,17 @@ The initramfs init script currently just gives you a root shell. Here is an in-p
 
 /bin/mount --move /mnt/us /mnt/fread/mnt/us # move mount point
 
-# TODO We should have a proper userland init script
-switch_root /mnt/fread /sbin/init # switch to fread userland
-# If you have issues with switch_root you can try:
-# chroot /mnt/fread
+# mount proc and sys filesystems
+mount -t proc proc  /mnt/fread/proc
+mount -t sysfs sysfs /mnt/fread/sys
+
+# chroot into the userland
+exec chroot /mnt/fread /sbin/init 5
+
+# TODO should we be using switch_root ?
 ```
 
-After landing in the fread userland you should manually mount `/proc` and `/sys`:
-
-```
-mount -t proc proc  /proc
-mount -t sysfs sysfs /sys
-```
+The default root password is `fread`.
 
 Loading the eink kernel modules:
 
