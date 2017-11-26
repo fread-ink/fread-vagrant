@@ -12,7 +12,7 @@ This is guide for how to compile fread from scratch using a vagrant machine. Thi
   * [Compiling the kernel](#compiling-the-kernel)
   * [Compiling kexec](#compiling-kexec)
   * [Building the userland](#building-the-userland)
-  * [Booting into fread](#booting-into-fread)
+  * [Installing fread](#installing-fread)
   * [Thanks to](#thanks-to)
   * [Pre-compiled](#pre-compiled)
   * [Copyright and license](#copyright-and-license)
@@ -196,9 +196,9 @@ Log out and then log back in before continuing.
 
 See the [fread-userland](https://github.com/fread-ink/fread-userland) readme file for info on how to build a working userland. 
 
-# Booting into fread
+# Installing fread
 
-## Getting to initramfs
+## Copying the files
 
 Put the following files in a directory called `fread/`:
 
@@ -210,56 +210,58 @@ Connect your e-reader using USB, mount it as a storage device and copy the `frea
 
 NOTE: THE NAMING AND LOCATIONS OF THE FILES AND DIRECTORY IS IMPORTANT!
 
-Now using a serial console, log in as root on the e-reader. Ensure that the e-reader has been unmounted/ejected from your computer (if it is plugged into usb) and then boot into fread:
+## Enabling usb networking
+
+You can enable usb networking by adding a file named `config.txt` to the `fread/` directory with the contents:
 
 ```
-cd /mnt/us/fread/
-./kexec --type=uImage -l ./uImage # load the kernel
-./kexec -e # boot the kernel
+USB="ethernet"
 ```
 
-fread should now boot into the initramfs!
+WARNING: There is currently a bug in usb networking that causes the system to crash if the usb cable is not plugged into a computer when usb networking initializes. Remember to plug in the usb cable before booting to fread.
 
-If the `/mnt/us` directory is empty then cd out of it, unmount/eject your kindle from the computer to which it's attached and cd back into `/mnt/us`.
-
-## Getting to userland
-
-The initramfs init script currently just gives you a root shell. Here is an in-progress script to get you into userland:
+If you are on a Debian/Ubuntu (and probably on many others) then everything should auto-configure (assuming you have a DHCP client enabled) and after bootup is complete you should see a new network interface appear (possibly called `usb0`) with an assigned IP address in the `192.168.1.x` range. You can then connect over ssh:
 
 ```
-# TODO if any of the following commands fail then echo an error
-# wait 5 seconds for user to hit any enter, drop them into a shell if they do
-# or reboot into rescue system if not (can we blink out a code on the LED?)
-
-# dark incantations to allow weird recursive mounting strategy
-/bin/mount --make-private / # move mount won't work for shared or slave mounts
-
-# Mount the kindle's fat32 partition so we can access the fread.ext4 file
-/sbin/losetup -o 8192 /dev/loop/0 /dev/mmcblk0p4 # for some reason we need a 8192 byte offset
-/bin/mkdir -p /mnt/us # ensure mountpoint exists
-/bin/mount -t vfat -o defaults,noatime,utf8,noexec,shortname=mixed /dev/loop/0 /mnt/us
-
-# Mount the fread userland
-/sbin/losetup /dev/loop/1 /mnt/us/fread/fread.ext4
-/bin/mkdir -p /mnt/fread # ensure mountpoint exists
-/bin/mount -t ext4 -o defaults,noatime /dev/loop/1 /mnt/fread
-/bin/mkdir -p /mnt/fread/mnt/us # ensure nested fat32 mountpoint exists
-
-/bin/mount --move /mnt/us /mnt/fread/mnt/us # move mount point
-
-# mount proc and sys filesystems
-mount -t proc proc  /mnt/fread/proc
-mount -t sysfs sysfs /mnt/fread/sys
-
-# chroot into the userland
-exec chroot /mnt/fread /sbin/init 5
-
-# TODO should we be using switch_root ?
+ssh root@192.168.1.1
 ```
 
 The default root password is `fread`.
 
-Loading the eink kernel modules:
+## Booting into fread using the KUAL extension
+
+This method only works if [KUAL](https://www.mobileread.com/forums/showthread.php?t=203326) is already installed in your kindle.
+
+Somewhere on your computer, clone the [fread KUAL extension](https://github.com/fread-ink/fread-kual-extension):
+
+```
+git clone https://github.com/fread-ink/fread-kual-extension
+```
+
+Then copy the `extensions/` directory to the root of your kindle's fat32 filesystem:
+
+```
+cp -a fread-kual-extension/extensions /path/where/e-reader/is/mounted/
+```
+
+Now on your kindle, access the KUAL app and select the "Switch to fread" menu entry to boot fread.
+
+## Booting into fread using root console
+
+If you have console access, log in as root on the e-reader. Ensure that the e-reader has been unmounted/ejected from your computer (if it is plugged into usb) and then boot into fread like so:
+
+```
+cd /mnt/us/fread/
+./kexec --type=uImage -f ./uImage
+```
+
+If the `/mnt/us` directory is empty then cd out of it, unmount/eject your kindle from the computer to which it's attached and cd back into `/mnt/us`.
+
+## Logging in
+
+The default root password is `fread`.
+
+## Loading the eink kernel modules
 
 ```
 modprobe eink_fb_waveform
