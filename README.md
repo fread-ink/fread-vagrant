@@ -289,7 +289,7 @@ The code described in this document is available as pre-compiled packages here:
 * [initrd](https://github.com/fread-ink/fread-initrd/tree/master/bin)
 * [kernel](https://github.com/fread-ink/fread-kernel-k4/tree/master/bin)
 * [kexec](https://github.com/fread-ink/fread-native-cross-compile/tree/master/bin)
-* userland (ToDo)
+* [userland](https://github.com/fread-ink/fread-userland/releases)
 
 or you can download the entire operating system in a ready-to-use package:
 
