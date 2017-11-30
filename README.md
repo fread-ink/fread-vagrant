@@ -220,10 +220,10 @@ USB="ethernet"
 
 WARNING: There is currently a bug in usb networking that causes the system to crash if the usb cable is not plugged into a computer when usb networking initializes. Remember to plug in the usb cable before booting to fread.
 
-If you are on a Debian/Ubuntu (and probably on many others) then everything should auto-configure (assuming you have a DHCP client enabled) and after bootup is complete you should see a new network interface appear (possibly called `usb0`) with an assigned IP address in the `192.168.1.x` range. You can then connect over ssh:
+If you are on a Debian/Ubuntu (and probably on many others) then everything should auto-configure (assuming you have a DHCP client enabled) and after bootup is complete you should see a new network interface appear (possibly called `usb0`) with an assigned IP address in the `192.168.15.x` range. You can then connect over ssh:
 
 ```
-ssh root@192.168.1.1
+ssh root@192.168.15.1
 ```
 
 The default root password is `fread`.
