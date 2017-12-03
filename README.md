@@ -261,9 +261,64 @@ If the `/mnt/us` directory is empty then cd out of it, unmount/eject your kindle
 
 The default root password is `fread`.
 
-## Loading the eink kernel modules
+## Getting internet access via usb networking
+
+Whichever computer you connected to e-reader should have received an IP from the fread.ink DHCP server in the `192.168.15.x` range. On that computer, check which IP you got using:
 
 ```
+ip addr show dev usb0 | grep 192.168.15
+```
+
+Replace `192.168.15.x` with the actual IP in the following commands.
+
+On the connected computer, run the following as root (assuming you're running GNU/Linux system):
+
+```
+echo "1" > /proc/sys/net/ipv4/ip_forward
+iptables -P FORWARD ACCEPT
+iptables -t nat -F POSTROUTING
+iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
+```
+
+Note that this is not at all secure, so if you care about those things you should probably learn how to set up better firewall rules.
+
+Now on fread do:
+
+```
+cd ~/
+./internet.sh 192.168.15.x
+```
+
+Now you should be able to `ping fread.ink`.
+
+## Getting X working
+
+Neither `startx`/`xinit` nor automatic updating is working yet, but you can test things out.
+
+You will need to get internet connectivity working to install `xeyes` (or some other test program). Look at the section in this README called _Getting internet access via usb networking_.
+
+```
+cd ~/
+apt update
+apt install -y xeyes
+./x.sh & # start X
+DISPLAY=:0 xeyes &
+```
+
+Now `X` and `xeyes` will be running but since we don't have display out-updatig working you will have to trigger a display update manually:
+
+```
+echo "direct" > /sys/devices/platform/mxc_epdc_fb/mxc_epdc_update
+```
+
+You should now see two eyes at the top left of your display.
+
+## Old-style framebuffer graphics
+
+This method will give you a (somewhat) normal framebuffer device but will not work with the mxc xorg driver. You can use this method if you have a non X application that works directly with framebuffers rather than 
+
+```
+modprobe -r mxc_epdc_fb # this module is loaded at boot but with wrong arguments
 modprobe eink_fb_waveform
 modprobe eink_fb_hal
 modprobe mxc_epdc_fb dont_register_fb=1
